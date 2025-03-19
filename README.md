@@ -14,12 +14,12 @@ git clone https://github.com/Tamanna013/Spotify-clone
 ```
 cd Spotify-clone
 ```
-Install dependencies:
+3. Install dependencies:
 ```
 npm install
 ```
-Run the development server:
+4. Run the development server:
 ```
 npm run dev
 ```
-Open ```http://localhost:3000``` to view the app in your browser.
+5. Open ```http://localhost:3000``` to view the app in your browser.
