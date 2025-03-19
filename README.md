@@ -1,9 +1,9 @@
 # Spotify Clone
 ## Tech Stack
->> React: For building the user interface.<br>
->> Next.js: For server-side rendering and routing.<br>
->> Tailwind CSS: For styling and responsive design.<br>
->> React Icons: For adding scalable icons.<br>
+1. React: For building the user interface.<br>
+2. Next.js: For server-side rendering and routing.<br>
+3. Tailwind CSS: For styling and responsive design.<br>
+4. React Icons: For adding scalable icons.<br>
 
 ## Setup
 1. Clone the repository:
