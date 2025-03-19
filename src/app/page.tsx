@@ -6,8 +6,16 @@ import { MdLibraryMusic } from "react-icons/md";
 import { BsPlayFill, BsSkipStartFill, BsSkipEndFill, BsShuffle, BsRepeat } from "react-icons/bs";
 import { FiVolume2 } from "react-icons/fi";
 import { MdQueueMusic, MdFullscreen } from "react-icons/md";
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import dynamic from "next/dynamic";
 
 export default function Home() {
+  const [progress, setProgress] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [selectedAlbum, setSelectedAlbum] = useState(null);
+  const router = useRouter();
+
   const rectangularPlaylists = [
     { name: "Hurry Up Tomorrow", image: "/playlist1.jpg" },
     { name: "On Repeat", image: "/playlist2.jpg" },
@@ -17,17 +25,6 @@ export default function Home() {
     { name: "Khamoshiyan (Original Motion Picture Soundtrack)", image: "/playlist6.jpg" },
   ];
 
-  const [progress, setProgress] = useState(0);
-
-  const updateProgress = () => {
-    setProgress((prev) => (prev < 100 ? prev + 1 : 100));
-  };
-  useEffect(() => {
-    const interval = setInterval(updateProgress, 1000);
-    return () => clearInterval(interval);
-  }, []);
-  
-
   const sections = [
     "Your Daily Mixes",
     "Top Picks For You",
@@ -35,10 +32,11 @@ export default function Home() {
     "Trending Now",
     "Throwback Hits",
   ];
-  
-  const morePlaylists = Array.from({ length: 25 }, (_, i) => ({
-    name: `Playlist ${i + 7}`,
-    image: `/playlist${i + 7}.jpg`,
+
+  const squarePlaylists = new Array(25).fill(null).map((_, i) => ({
+    id: i,
+    name: `Playlist ${i + 1}`,
+    image: `/playlist${(i % 6) + 1}.jpg`,
   }));
 
   const songs = Array.from({ length: 6 }, (_, i) => ({
@@ -46,16 +44,23 @@ export default function Home() {
     image: `/song${i + 1}.jpg`,
   }));
 
-  const [isPlaying, setIsPlaying] = useState(false);
+  const updateProgress = () => {
+    setProgress((prev) => (prev < 100 ? prev + 1 : 100));
+  };
+
+  useEffect(() => {
+    const interval = setInterval(updateProgress, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   const togglePlayPause = () => {
     setIsPlaying(!isPlaying);
   };
 
-  const squarePlaylists = new Array(25).fill(null).map((_, i) => ({
-    name: `Playlist ${i + 1}`,
-    image: `/playlist${(i % 6) + 1}.jpg`,
-  }));
+  const handleAlbumClick = (albumId) => {
+    setSelectedAlbum(albumId); // Set the selected album
+    router.push(`/album/${albumId}`); // Navigate to album page
+  };
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-black text-white">
@@ -82,6 +87,7 @@ export default function Home() {
             <div
               key={index}
               className="relative flex items-center bg-zinc-800 rounded-lg w-full max-w-3xl h-24 p-3 cursor-pointer hover:bg-zinc-700 transition"
+              onClick={() => handleAlbumClick(index)} // Click to change album
             >
               <div className="flex items-center justify-center bg-green-500 p-2 rounded-full mr-3">
                 <FaPlay className="text-black" size={16} />
@@ -107,14 +113,20 @@ export default function Home() {
             <h2 className="text-2xl font-bold mb-4">{section}</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
               {squarePlaylists.slice(sectionIndex * 5, (sectionIndex + 1) * 5).map((playlist, index) => (
-                <div key={index} className="relative bg-zinc-800 rounded-lg cursor-pointer hover:bg-zinc-700 transition p-3">
-                  <Image
-                    src={playlist.image}
-                    alt={playlist.name}
-                    width={150}
-                    height={150}
-                    className="rounded-md w-full h-full object-cover"
-                  />
+                <div
+                  key={index}
+                  className="relative bg-zinc-800 rounded-lg cursor-pointer hover:bg-zinc-700 transition p-3"
+                  onClick={() => handleAlbumClick(playlist.id)} // Click to change album
+                >
+                  <Link href={`/album/${playlist.id}`}>
+                    <Image
+                      src={playlist.image}
+                      alt={playlist.name}
+                      width={150}
+                      height={150}
+                      className="rounded-md w-full h-full object-cover"
+                    />
+                  </Link>
                   <p className="mt-2 text-sm font-semibold text-center">{playlist.name}</p>
                 </div>
               ))}
@@ -165,7 +177,8 @@ export default function Home() {
         {/* Right Section */}
         <div className="flex items-center space-x-4">
           <MdQueueMusic size={24} className="cursor-pointer text-gray-400 hover:text-white" />
-          <FiVolume2 size={24} className="cursor-pointer text-gray-400 hover:text-white" />
+          <FiVolume2 size={20} className="cursor-pointer text-gray-400 hover:text-white" />
+          <input type="range" min="0" max="100" value={progress} className="w-24" />
           <MdFullscreen size={24} className="cursor-pointer text-gray-400 hover:text-white" />
         </div>
       </div>
